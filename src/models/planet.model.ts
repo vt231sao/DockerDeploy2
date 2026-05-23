@@ -5,8 +5,7 @@ export interface IPlanet extends Document {
     description?: string;
     type: 'Terrestrial' | 'Gas Giant' | 'Ice Giant' | 'Dwarf Planet';
     massEarth: number;
-    ownerId: mongoose.Types.ObjectId; // Додано поле в інтерфейс
-    // Віртуальне поле
+    ownerId: mongoose.Types.ObjectId;
     massKg: string;
     createdAt: Date;
     updatedAt: Date;
@@ -47,7 +46,6 @@ const PlanetSchema: Schema = new Schema(
                 message: 'Маса має бути > 0. Для Dwarf Planet маса має бути < 0.1 Землі'
             }
         },
-        // ДОДАНО: Зв'язок із колекцією користувачів
         ownerId: {
             type: Schema.Types.ObjectId,
             ref: 'User',

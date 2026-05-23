@@ -7,17 +7,10 @@ import { Planet } from '../models/planet.model';
 
 const router = Router();
 
-// ==========================================
-// РОЗШИРЕННЯ ТИПІВ ДЛЯ АВТОРИЗАЦІЇ
-// ==========================================
-// Створюємо власний інтерфейс, який каже TypeScript: "Тут точно буде userId"
 interface AuthRequest<P = any> extends Request<P> {
     userId?: string;
 }
 
-// ==========================================
-// СПЕЦИФІЧНИЙ МАРШРУТ (Важкі планети)
-// ==========================================
 router.get('/heavy', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const heavyPlanets = await PlanetStorage.getAll({ minMassEarth: 10 });
@@ -27,9 +20,6 @@ router.get('/heavy', async (req: Request, res: Response, next: NextFunction) => 
     }
 });
 
-// ==========================================
-// CRUD МАРШРУТИ
-// ==========================================
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { type, minMassEarth, page, limit, sortBy } = req.query;
@@ -58,7 +48,6 @@ router.get('/:id', async (req: Request<{id: string}>, res: Response, next: NextF
     }
 });
 
-// Використовуємо AuthRequest замість звичайного Request
 router.post('/', requireAuth, validate(createPlanetSchema), async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
         req.body.ownerId = req.userId;
@@ -69,7 +58,6 @@ router.post('/', requireAuth, validate(createPlanetSchema), async (req: AuthRequ
     }
 });
 
-// Використовуємо AuthRequest<{id: string}> для маршрутів з параметрами
 router.patch('/:id', requireAuth, validate(updatePlanetSchema), async (req: AuthRequest<{id: string}>, res: Response, next: NextFunction) => {
     try {
         const planet = await Planet.findById(req.params.id);
@@ -88,7 +76,6 @@ router.patch('/:id', requireAuth, validate(updatePlanetSchema), async (req: Auth
     }
 });
 
-// Використовуємо AuthRequest<{id: string}>
 router.delete('/:id', requireAuth, async (req: AuthRequest<{id: string}>, res: Response, next: NextFunction) => {
     try {
         const planet = await Planet.findById(req.params.id);

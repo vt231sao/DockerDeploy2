@@ -9,18 +9,16 @@ export interface IUser extends Document {
 }
 
 const userSchema = new Schema<IUser>({
-    email: { type: String, required: true, unique: true }, // Унікальний індекс
+    email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     createdAt: { type: Date, default: Date.now }
 });
-// Хешування
 userSchema.pre('save', async function () {
     if (!this.isModified('password')) return;
 
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
 });
-//Порівняння паролю для логіну
 userSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
     return bcrypt.compare(candidatePassword, this.password);
 };

@@ -1,7 +1,10 @@
 import { Planet } from '../models/planet.model';
 import { connectDBForTesting, closeDBForTesting, clearDBForTesting } from './setup';
+import mongoose from 'mongoose';
 
 describe('Planet Mongoose Model Unit Tests', () => {
+    // Створюємо фейковий ID користувача для тестів
+    const mockOwnerId = new mongoose.Types.ObjectId();
 
     beforeAll(async () => await connectDBForTesting());
     afterEach(async () => await clearDBForTesting());
@@ -11,7 +14,8 @@ describe('Planet Mongoose Model Unit Tests', () => {
         const planet = new Planet({
             name: 'Earth',
             type: 'Terrestrial',
-            massEarth: 1
+            massEarth: 1,
+            ownerId: mockOwnerId // <-- ДОДАНО
         });
         const savedPlanet = await planet.save();
 
@@ -25,7 +29,8 @@ describe('Planet Mongoose Model Unit Tests', () => {
         const planet = new Planet({
             name: 'Jupiter',
             type: 'Gas Giant',
-            massEarth: 317.8
+            massEarth: 317.8,
+            ownerId: mockOwnerId // <-- ДОДАНО
         });
         const savedPlanet = await planet.save();
 
@@ -34,7 +39,8 @@ describe('Planet Mongoose Model Unit Tests', () => {
     });
 
     it('повинна видати помилку валідації, якщо не вказано обов\'язкове поле (name)', async () => {
-        const planet = new Planet({ type: 'Gas Giant', massEarth: 10 });
+        // ownerId додано, щоб тест впав саме через відсутність name, а не ownerId
+        const planet = new Planet({ type: 'Gas Giant', massEarth: 10, ownerId: mockOwnerId });
         let err: any;
         try {
             await planet.save();
@@ -49,7 +55,8 @@ describe('Planet Mongoose Model Unit Tests', () => {
         const pluto = new Planet({
             name: 'Pluto',
             type: 'Dwarf Planet',
-            massEarth: 0.5
+            massEarth: 0.5,
+            ownerId: mockOwnerId // <-- ДОДАНО
         });
         let err: any;
         try {
