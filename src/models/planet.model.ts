@@ -5,6 +5,7 @@ export interface IPlanet extends Document {
     description?: string;
     type: 'Terrestrial' | 'Gas Giant' | 'Ice Giant' | 'Dwarf Planet';
     massEarth: number;
+    ownerId: mongoose.Types.ObjectId; // Додано поле в інтерфейс
     // Віртуальне поле
     massKg: string;
     createdAt: Date;
@@ -36,7 +37,6 @@ const PlanetSchema: Schema = new Schema(
         massEarth: {
             type: Number,
             required: true,
-            // КАСТОМНИЙ ВАЛІДАТОР (Завдання 4)
             validate: {
                 validator: function (value: number) {
                     if (this.type === 'Dwarf Planet' && value >= 0.1) {
@@ -46,11 +46,16 @@ const PlanetSchema: Schema = new Schema(
                 },
                 message: 'Маса має бути > 0. Для Dwarf Planet маса має бути < 0.1 Землі'
             }
+        },
+        // ДОДАНО: Зв'язок із колекцією користувачів
+        ownerId: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: [true, 'Планета повинна мати власника']
         }
     },
     {
         timestamps: true,
-
         toJSON: {
             virtuals: true,
             transform: function (doc, ret: Record<string, any>) {
